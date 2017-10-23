@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.tedu.ttms.product.dao.TeamDao">
+
+    <sql id="whereQuery">
+        <where>
+            <if test="name!=null and name!=''">
+                p1.name like concat("%",#{name},"%")
+            </if>
+        </where>
+    </sql>
+    <!-- resultType的值为一行记录要映射的那个对象 -->
+    <select id="findPageObjects"
+            resultType="map">
+         select t1.*,p1.name projectName
+         from tms_teams t1 join tms_projects p1
+         on t1.projectId=p1.id
+         <include refid="whereQuery"/>
+         order by t1.createdTime desc
+         limit #{startIndex},#{pageSize}
+    </select>
+    <select id="getRowCount"
+            resultType="int">
+        select count(*)
+        from tms_teams t1 join tms_projects p1
+        on t1.projectId=p1.id
+        <include refid="whereQuery"/>
+    </select>
+</mapper>
+
+

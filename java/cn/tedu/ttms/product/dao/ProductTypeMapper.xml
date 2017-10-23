@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.tedu.ttms.product.dao.ProductTypeDao">
+    <!-- 获取zTree需要的分类数据 -->
+    <select id="findZtreeNodes" 
+            resultType="cn.tedu.ttms.common.vo.Node">
+        select id,parentId,name
+        from tms_classes
+    </select>
+    <!-- 统计parentId为id的子元素有多少个 -->
+    <select id="hasChilds" 
+            parameterType="integer"
+            resultType="int">
+        select count(*)
+        from tms_classes
+        where parentId=#{id}    
+    </select>
+    <!-- 删除分类信息 -->
+    <delete id="deleteObject"
+            parameterType="integer">
+        delete from tms_classes
+        where id=#{id}
+    </delete>
+    <!-- 查询所有分类及这个分类的父类名称 -->
+    <select id="findObjects"
+            resultType="map">
+         <!-- 方案1 -->
+         select c.*,p.name parentName
+         from tms_classes c left join tms_classes p
+         on c.parentId=p.id
+         <!--  方案2
+         select c.*,
+         (select name parentName 
+          from tms_classes p 
+          where c.parentId=p.id)
+         from tms_classes c
+         -->
+    </select>
+    <insert id="insertObject"
+            parameterType="productType"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        insert into tms_classes
+        (name,parentId,sort,note,
+         createdTime,modifiedTime,
+         createdUser,modifiedUser)
+        values(
+         #{name},#{parentId},#{sort},#{note},
+         now(),now(),#{createdUser},#{modifiedUser}
+        )
+    </insert>
+    
+    
+</mapper>
+
+
